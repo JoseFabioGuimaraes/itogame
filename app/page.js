@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export default function Home() {
     
-    // --- Nossos Estados ---
+    // --- Nossos Estados (Sem alteração) ---
     const [theme, setTheme] = useState("Aperte para gerar um tema!");
     const [isThemeLoading, setIsThemeLoading] = useState(false);
     const [themeError, setThemeError] = useState(null);
@@ -12,13 +12,13 @@ export default function Home() {
     const [isCardFlipped, setIsCardFlipped] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    // --- Nossas Funções ---
+    // --- Nossas Funções (COM ALTERAÇÕES) ---
+
     const handleGetTheme = async () => {
         setIsThemeLoading(true);
         setThemeError(null);
         setTheme("Gerando...");
         try {
-            // Usamos o modelo que funcionou (gemini-2.0-flash ou outro)
             const response = await fetch('/api/get-theme'); 
             if (!response.ok) {
                 const err = await response.json();
@@ -35,18 +35,45 @@ export default function Home() {
         }
     };
 
+    // --- NOVA FUNÇÃO HELPER ---
+    // Gera um número aleatório criptograficamente seguro entre 1 e 100
+    function getCryptoRandomInt() {
+        // Cria um "array" para guardar um número de 32 bits
+        const randomBuffer = new Uint32Array(1);
+
+        // Preenche o array com um valor aleatório seguro
+        window.crypto.getRandomValues(randomBuffer);
+
+        // Pega o valor (um número entre 0 e 4294967295)
+        const randomValue = randomBuffer[0];
+
+        // Converte esse valor para um percentual (0.0 a 0.999...)
+        // 4294967296 é 2^32
+        const percentile = randomValue / 4294967296; 
+
+        // Multiplica pelo nosso range (100) e arredonda para baixo (0-99),
+        // depois soma 1 (1-100).
+        return Math.floor(percentile * 100) + 1;
+    }
+    // --- FIM DA NOVA FUNÇÃO ---
+
+
     const handleDrawCard = () => {
-        if (isCardFlipped) return; // Não deixa virar de novo
-        const newNumber = Math.floor(Math.random() * 100) + 1;
+        if (isCardFlipped) return; 
+        
+        // --- A GRANDE MUDANÇA ESTÁ AQUI ---
+        // const newNumber = Math.floor(Math.random() * 100) + 1; // <-- Método antigo
+        const newNumber = getCryptoRandomInt(); // <-- NOVO MÉTODO CRIPTOGRÁFICO
+        
         setCardNumber(newNumber);
         setIsCardFlipped(true);
     };
 
-    // --- Nosso JSX (HTML) ---
+    // --- Nosso JSX (O HTML) ---
     return (
         <main className="main-wrapper">
             
-            {/* Ícone de Informação (continua no topo) */}
+            {/* Ícone de Informação */}
             <div id="info-icon" className="info-icon" onClick={() => setShowModal(true)}>
                 i
             </div>
@@ -86,8 +113,7 @@ export default function Home() {
                 >
                     {isThemeLoading ? "Gerando..." : "Gerar Tema"}
                 </button>
-
-                {/* Mostra o botão "Puxar" e instruções SÓ se a carta não estiver virada */}
+                
                 {!isCardFlipped && (
                     <>
                         <button id="draw-button" onClick={handleDrawCard}>
@@ -98,14 +124,13 @@ export default function Home() {
                         </p>
                     </>
                 )}
-
-                {/* Seu footer de créditos */}
+                
                 <p className="footer-credits">
                     @jfabioguimaraes :)
                 </p>
             </div>
 
-            {/* Modal de Regras (só aparece se showModal for true) */}
+            {/* Modal de Regras */}
             {showModal && (
                 <div 
                     id="info-modal" 
