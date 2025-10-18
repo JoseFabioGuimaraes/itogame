@@ -1,95 +1,136 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'; 
+
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    
+    // --- Nossos Estados ---
+    const [theme, setTheme] = useState("Aperte para gerar um tema!");
+    const [isThemeLoading, setIsThemeLoading] = useState(false);
+    const [themeError, setThemeError] = useState(null);
+    const [cardNumber, setCardNumber] = useState('?');
+    const [isCardFlipped, setIsCardFlipped] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    // --- Nossas Funções ---
+    const handleGetTheme = async () => {
+        setIsThemeLoading(true);
+        setThemeError(null);
+        setTheme("Gerando...");
+        try {
+            // Usamos o modelo que funcionou (gemini-2.0-flash ou outro)
+            const response = await fetch('/api/get-theme'); 
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || "Falha na requisição");
+            }
+            const data = await response.json();
+            setTheme(data.theme);
+        } catch (error) {
+            console.error(error);
+            setThemeError("Erro ao gerar. Tente de novo!");
+            setTheme("Aperte para gerar um tema!"); 
+        } finally {
+            setIsThemeLoading(false);
+        }
+    };
+
+    const handleDrawCard = () => {
+        if (isCardFlipped) return; // Não deixa virar de novo
+        const newNumber = Math.floor(Math.random() * 100) + 1;
+        setCardNumber(newNumber);
+        setIsCardFlipped(true);
+    };
+
+    // --- Nosso JSX (HTML) ---
+    return (
+        <main className="main-wrapper">
+            
+            {/* Ícone de Informação (continua no topo) */}
+            <div id="info-icon" className="info-icon" onClick={() => setShowModal(true)}>
+                i
+            </div>
+
+            {/* 1. ÁREA DO TEMA (Topo) */}
+            <div className="theme-container">
+                <h2 id="theme-display">
+                    {themeError ? themeError : theme}
+                </h2>
+            </div>
+
+            {/* 2. ÁREA DA CARTA (Meio) */}
+            <div className="container">
+                <div 
+                    id="card" 
+                    className={!isCardFlipped ? "card-back" : ""} 
+                    onClick={handleDrawCard}
+                >
+                    <span 
+                        id="number-display" 
+                        className={isCardFlipped ? "reveal-animation" : ""}
+                    >
+                        {cardNumber}
+                    </span>
+                    
+                    {!isCardFlipped && <div className="card-detail"></div>}
+                </div>
+            </div>
+
+            {/* 3. ÁREA DE CONTROLES (Baixo) */}
+            <div className="controls-container">
+                
+                <button 
+                    id="theme-button" 
+                    onClick={handleGetTheme} 
+                    disabled={isThemeLoading}
+                >
+                    {isThemeLoading ? "Gerando..." : "Gerar Tema"}
+                </button>
+
+                {/* Mostra o botão "Puxar" e instruções SÓ se a carta não estiver virada */}
+                {!isCardFlipped && (
+                    <>
+                        <button id="draw-button" onClick={handleDrawCard}>
+                            Puxar minha carta
+                        </button>
+                        <p className="instructions">
+                            Puxe sua carta e <strong>não mostre</strong> para ninguém!
+                        </p>
+                    </>
+                )}
+
+                {/* Seu footer de créditos */}
+                <p className="footer-credits">
+                    @jfabioguimaraes :)
+                </p>
+            </div>
+
+            {/* Modal de Regras (só aparece se showModal for true) */}
+            {showModal && (
+                <div 
+                    id="info-modal" 
+                    className="modal-overlay visible"
+                    onClick={() => setShowModal(false)}
+                >
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <span 
+                            id="close-modal" 
+                            className="close-modal"
+                            onClick={() => setShowModal(false)}
+                        >
+                            &times;
+                        </span>
+                        <h2>Como jogar?</h2>
+                        <p>O objetivo é organizar as cartas de todos (1-100) em ordem crescente, <strong>sem dizer seu número!</strong></p>
+                        <ol>
+                            <li>Um "tema" é escolhido (ex: "Nível de pânico").</li>
+                            <li>Se seu número for baixo (ex: 3), sua pista deve ser algo calmo (ex: "Ver TV em casa").</li>
+                            <li>Se seu número for alto (ex: 98), sua pista deve ser desesperadora (ex: "O avião caindo").</li>
+                            <li>Com base nas pistas, o time decide quem joga a carta, um de cada vez, do menor para o maior.</li>
+                        </ol>
+                    </div>
+                </div>
+            )}
+        </main>
+    );
 }

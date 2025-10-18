@@ -1,42 +1,300 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Reset básico e tema mobile-first */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh; /* Ocupa 100% da altura da tela */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    overflow: hidden; /* Impede o scroll */
+    touch-action: manipulation; /* Evita zoom no celular */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* O NOVO WRAPPER PRINCIPAL */
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ocupa 100% da tela */
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+/* --- 1. ÁREA DO TEMA (Topo) --- */
+.theme-container {
+    padding: 20px;
+    padding-top: 60px; /* Dá espaço para o ícone 'i' não sobrepor */
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box; 
+    flex-shrink: 0; /* Não deixa encolher */
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+#theme-display {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #e0e0e0;
+    font-weight: 500;
+    min-height: 2.5rem; 
+    padding: 0 10px;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* --- 2. ÁREA DA CARTA (Meio) --- */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1; /* Faz esta área ocupar todo o espaço sobrando no meio */
+    padding: 10px 20px;
+    box-sizing: border-box;
+    text-align: center;
+    min-height: 0; /* Fix de layout para flexbox */
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* A Carta */
+#card {
+    position: relative; 
+    width: 80vw;
+    height: 60vh; 
+    max-height: 450px;
+    max-width: 400px;
+    aspect-ratio: 2/3; 
+    
+    background-color: #2a2a2a; 
+    color: #e0e0e0; 
+    border-radius: 20px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); 
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+#number-display {
+    font-size: clamp(8rem, 25vw, 12rem); 
+    font-weight: 700; 
+    letter-spacing: -5px; 
+    transition: opacity 0.3s ease; 
+}
+
+#card:not(.card-back) #number-display {
+    opacity: 0;
+}
+
+/* Verso da carta */
+.card-back {
+    background-color: #8aff8a;
+    color: #121212; 
+    cursor: pointer;
+}
+
+.card-back #number-display {
+    opacity: 1;
+}
+
+/* Detalhe da carta */
+.card-detail {
+    position: absolute;
+    width: 60px; 
+    height: 60px;
+    border: 4px solid #121212; 
+    border-radius: 50%; 
+    top: 20px; 
+    left: 20px;
+    opacity: 1; 
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#card:not(.card-back) .card-detail {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* Animação */
+@keyframes reveal {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.reveal-animation {
+    opacity: 1 !important;
+    animation: reveal 0.4s ease-out forwards; 
+}
+
+
+/* --- 3. ÁREA DE CONTROLES (Baixo) --- */
+.controls-container {
+    padding: 20px;
+    padding-bottom: 30px; /* Espaço na base do celular */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Espaço entre os botões */
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0; /* Não deixa encolher */
+}
+
+/* Botão de Gerar Tema */
+#theme-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #121212;
+    background-color: #f0f0f0; 
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    width: 80%;
+    max-width: 400px;
+}
+
+#theme-button:hover {
+    background-color: #ffffff;
+    transform: scale(1.05);
+}
+
+#theme-button:disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* Botão de Puxar Carta */
+#draw-button {
+    padding: 16px 32px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #121212; 
+    background-color: #8aff8a; 
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.2);
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    width: 80%;
+    max-width: 400px;
+}
+
+#draw-button:hover {
+    background-color: #6ee66e;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(0, 255, 0, 0.3);
+}
+
+#draw-button:active {
+    background-color: #5ac75a;
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 255, 0, 0.2);
+}
+
+/* Instruções */
+.instructions {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #a0a0a0;
+    line-height: 1.5;
+}
+
+.instructions strong {
+    color: #e0e0e0;
+}
+
+
+/* --- ÍCONE DE INFORMAÇÃO E MODAL --- */
+
+.info-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    font-size: 20px;
+    font-weight: 700;
+    font-style: italic;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s, background-color 0.2s;
+    user-select: none;
+}
+.info-icon:hover {
+    background-color: #6a6a6a;
+    transform: scale(1.1);
+}
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden; 
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+.modal-content {
+    background-color: #2a2a2a; 
+    color: #e0e0e0;
+    padding: 25px 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+.modal-overlay.visible .modal-content {
+    transform: scale(1);
+}
+.modal-content h2 {
+    margin-top: 0;
+    color: #8aff8a;
+}
+.modal-content p, .modal-content li {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #c0c0c0;
+}
+.modal-content strong {
+    color: #e0e0e0;
+}
+.modal-content ol {
+    padding-left: 25px;
+}
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 30px;
+    font-weight: 700;
+    color: #a0a0a0;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+.close-modal:hover {
+    color: #e0e0e0;
+    transform: scale(1.1);
+}
+
+/* --- ESTILO DO FOOTER (Créditos) --- */
+.footer-credits {
+    font-size: 0.75rem;  /* 12px (bem menor que o padrão) */
+    color: #555;          /* Um cinza bem sutil */
+    margin-top: 10px;      /* Um pequeno espaço acima dele */
+    font-weight: 500;
 }
