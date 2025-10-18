@@ -3,29 +3,29 @@ body, html {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100vh; /* Ocupa 100% da altura da tela */
+    min-height: 100vh; /* CORRIGIDO: Permite conteúdo maior que a tela */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: #121212;
     color: #e0e0e0;
-    overflow: hidden; /* Impede o scroll */
-    touch-action: manipulation; /* Evita zoom no celular */
+    overflow-y: auto;   /* CORRIGIDO: Permite scroll se necessário */
+    touch-action: manipulation; 
 }
 
 /* O NOVO WRAPPER PRINCIPAL */
 .main-wrapper {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Ocupa 100% da tela */
+    min-height: 100vh; /* CORRIGIDO: Garante que o wrapper ocupe pelo menos a tela inteira */
 }
 
 /* --- 1. ÁREA DO TEMA (Topo) --- */
 .theme-container {
     padding: 20px;
-    padding-top: 60px; /* Dá espaço para o ícone 'i' não sobrepor */
+    padding-top: 60px; 
     text-align: center;
     width: 100%;
     box-sizing: border-box; 
-    flex-shrink: 0; /* Não deixa encolher */
+    flex-shrink: 0; 
 }
 
 #theme-display {
@@ -47,15 +47,15 @@ body, html {
     padding: 10px 20px;
     box-sizing: border-box;
     text-align: center;
-    min-height: 0; /* Fix de layout para flexbox */
+    min-height: 0; 
 }
 
 /* A Carta */
 #card {
     position: relative; 
     width: 80vw;
-    height: 60vh; 
-    max-height: 450px;
+    /* height: 60vh; */  /* REMOVIDO: Esta era a causa do overflow */
+    max-height: 100%; /* CORRIGIDO: Limita a altura ao container */
     max-width: 400px;
     aspect-ratio: 2/3; 
     
@@ -123,14 +123,14 @@ body, html {
 /* --- 3. ÁREA DE CONTROLES (Baixo) --- */
 .controls-container {
     padding: 20px;
-    padding-bottom: 30px; /* Espaço na base do celular */
+    padding-bottom: 30px; 
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px; /* Espaço entre os botões */
+    gap: 15px; 
     width: 100%;
     box-sizing: border-box;
-    flex-shrink: 0; /* Não deixa encolher */
+    flex-shrink: 0; 
 }
 
 /* Botão de Gerar Tema */

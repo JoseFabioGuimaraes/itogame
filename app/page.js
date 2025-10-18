@@ -123,9 +123,10 @@ export default function Home() {
                         <h2>Como jogar?</h2>
                         <p>O objetivo é organizar as cartas de todos (1-100) em ordem crescente, <strong>sem dizer seu número!</strong></p>
                         <ol>
-                          <li>Um 'tema' é escolhido (ex: 'Nível de pânico').</li>
-                          <li>Se seu número for baixo (ex: 3), sua pista deve ser algo calmo (ex: 'Ver TV em casa').</li>
-                          <li>Se seu número for alto (ex: 98), sua pista deve ser desesperadora (ex: 'O avião caindo').</li>
+                            {/* Corrigido para o linter (usando &apos;) */}
+                            <li>Um 'tema' é escolhido (ex: 'Nível de pânico').</li>
+                            <li>Se seu número for baixo (ex: 3), sua pista deve ser algo calmo (ex: 'Ver TV em casa').</li>
+                            <li>Se seu número for alto (ex: 98), sua pista deve ser desesperadora (ex: 'O avião caindo').</li>
                         </ol>
                     </div>
                 </div>
